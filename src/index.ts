@@ -171,25 +171,27 @@ function preactPlugin({
 				return {
 					build: {
 						rolldownOptions: {
-							onwarn(warning, warn) {
-								// Silence Rollup's module-level directive warnings re:"use client".
-								// They're likely to come from `node_modules` and won't be actionable.
-								if (
-									warning.code === "MODULE_LEVEL_DIRECTIVE" &&
-									warning.message.includes("use client")
-								)
-									return;
-								// ESBuild seemingly doesn't include mappings for directives, causing
-								// Rollup to emit warnings about missing source locations. This too is
-								// likely to come from `node_modules` and won't be actionable.
-								// evanw/esbuild#3548
-								if (
-									warning.code === "SOURCEMAP_ERROR" &&
-									warning.message.includes("resolve original location") &&
-									warning.pos === 0
-								)
-									return;
-								warn(warning);
+							onLog(level, warning, warn) {
+								 if (level === 'warn') {
+									// Silence Rollup's module-level directive warnings re:"use client".
+									// They're likely to come from `node_modules` and won't be actionable.
+									if (
+										warning.code === "MODULE_LEVEL_DIRECTIVE" &&
+										warning.message.includes("use client")
+									)
+										return;
+									// ESBuild seemingly doesn't include mappings for directives, causing
+									// Rollup to emit warnings about missing source locations. This too is
+									// likely to come from `node_modules` and won't be actionable.
+									// evanw/esbuild#3548
+									if (
+										warning.code === "SOURCEMAP_ERROR" &&
+										warning.message.includes("resolve original location") &&
+										warning.pos === 0
+									)
+										return;
+									warn(warning);
+								 }
 							},
 						},
 					},
